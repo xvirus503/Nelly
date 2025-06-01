@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>¡Feliz Cumpleaños Nelly!</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      background: linear-gradient(to bottom, #fbc2eb, #a6c1ee);
+      font-family: 'Comic Sans MS', cursive;
+      overflow: hidden;
+    }
+
+    .container {
+      position: relative;
+      z-index: 2;
+      text-align: center;
+      padding: 30px;
+      background-color: rgba(0, 0, 0, 0.4);
+      margin: 40px auto;
+      border-radius: 25px;
+      width: 90%;
+      max-width: 700px;
+      color: #fff;
+      box-shadow: 0 0 25px rgba(255,255,255,0.3);
+      animation: fadeIn 2s ease-in-out;
+    }
+
+    h1 {
+      font-size: 3em;
+      color: #FFD700;
+      animation: bounce 2s infinite;
+    }
+
+    p {
+      font-size: 1.5em;
+      margin: 20px 0;
+    }
+
+    .firma {
+      font-size: 1.2em;
+      margin-top: 30px;
+      color: #ffebcd;
+      font-style: italic;
+    }
+
+    img {
+      width: 220px;
+      margin: 15px;
+      border-radius: 20px;
+      box-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+      transition: transform 0.3s;
+    }
+
+    img:hover {
+      transform: scale(1.05);
+    }
+
+    .buttons {
+      margin-top: 25px;
+    }
+
+    .btn {
+      background-color: #ff69b4;
+      color: white;
+      border: none;
+      padding: 15px 25px;
+      margin: 10px;
+      font-size: 1em;
+      border-radius: 30px;
+      cursor: pointer;
+      box-shadow: 0 0 15px #ffb6c1;
+      transition: all 0.3s ease;
+    }
+
+    .btn:hover {
+      background-color: #ff85c1;
+      transform: scale(1.1);
+    }
+
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.95); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    /* Fuegos artificiales */
+    canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    /* Confeti animado */
+    .confetti {
+      position: fixed;
+      width: 10px;
+      height: 10px;
+      background-color: #ff69b4;
+      animation: fall linear infinite;
+      z-index: 1;
+      opacity: 0.8;
+    }
+
+    @keyframes fall {
+      0% {
+        transform: translateY(-100px) rotate(0deg);
+      }
+      100% {
+        transform: translateY(100vh) rotate(360deg);
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Música de fondo -->
+  <audio autoplay loop>
+    <source src="https://d500.d2mefast.net/tb/7/1a/tubidy_mp3_9886.mp3?play" type="audio/mpeg">
+    Tu navegador no soporta audio HTML5.
+  </audio>
+
+  <!-- Fuegos artificiales -->
+  <canvas id="fireworks"></canvas>
+
+  <!-- Contenido principal -->
+  <div class="container">
+    <h1>🎂 ¡Feliz Cumpleaños Nelly! 🎂</h1>
+    <p>Hoy celebramos a una persona increíble que llena el mundo de alegría 💕</p>
+
+    <!-- Imágenes -->
+    <img src="https://i.pinimg.com/736x/d5/45/42/d54542d2216231e669bf7246fdf27287.jpg" alt="Snoopy feliz">
+    <img src="https://i.pinimg.com/736x/6d/64/df/6d64df2bc2b0621b5e7186b6f1d9c96c.jpg" alt="Snoopy con corazón">
+    <img src="https://i.pinimg.com/736x/5b/fd/99/5bfd9992fff18423c121863ed4306a00.jpg" alt="Snoopy celebrando">
+
+    <!-- Botones -->
+    <div class="buttons">
+      <button class="btn">🎈 ¡Eres una estrella brillante!</button>
+      <button class="btn">💖 Que tu sonrisa nunca falte</button>
+      <button class="btn">🌟 Te mereces el universo</button>
+    </div>
+
+    <!-- Firma -->
+    <p class="firma">ATT: Dennis 🐶🎁</p>
+  </div>
+
+  <!-- Script de fuegos artificiales -->
+  <script>
+    const canvas = document.getElementById("fireworks");
+    const ctx = canvas.getContext("2d");
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    let fireworks = [];
+
+    function random(min, max) {
+      return Math.random() * (max - min) + min;
+    }
+
+    class Firework {
+      constructor() {
+        this.x = random(0, canvas.width);
+        this.y = canvas.height;
+        this.targetY = random(canvas.height / 2, canvas.height / 4);
+        this.speed = random(2, 4);
+        this.radius = 2;
+        this.exploded = false;
+        this.particles = [];
+      }
+
+      update() {
+        if (!this.exploded) {
+          this.y -= this.speed;
+          if (this.y <= this.targetY) {
+            this.exploded = true;
+            for (let i = 0; i < 50; i++) {
+              this.particles.push(new Particle(this.x, this.y));
+            }
+          }
+        } else {
+          this.particles.forEach(p => p.update());
+        }
+      }
+
+      draw() {
+        if (!this.exploded) {
+          ctx.beginPath();
+          ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+          ctx.fillStyle = "#FFD700";
+          ctx.fill();
+        } else {
+          this.particles.forEach(p => p.draw());
+        }
+      }
+    }
+
+    class Particle {
+      constructor(x, y) {
+        this.x = x;
+        this.y = y;
+        this.speedX = random(-3, 3);
+        this.speedY = random(-3, 3);
+        this.alpha = 1;
+        this.size = random(2, 4);
+        this.color = `hsl(${Math.floor(random(0, 360))}, 100%, 60%)`;
+      }
+
+      update() {
+        this.x += this.speedX;
+        this.y += this.speedY;
+        this.alpha -= 0.02;
+      }
+
+      draw() {
+        ctx.globalAlpha = this.alpha;
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        ctx.fillStyle = this.color;
+        ctx.fill();
+        ctx.globalAlpha = 1;
+      }
+    }
+
+    function animateFireworks() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      if (Math.random() < 0.05) {
+        fireworks.push(new Firework());
+      }
+      fireworks.forEach((fw, index) => {
+        fw.update();
+        fw.draw();
+        if (fw.exploded && fw.particles.every(p => p.alpha <= 0)) {
+          fireworks.splice(index, 1);
+        }
+      });
+      requestAnimationFrame(animateFireworks);
+    }
+
+    animateFireworks();
+    window.addEventListener("resize", () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    });
+  </script>
+
+  <!-- Script para confeti -->
+  <script>
+    for (let i = 0; i < 100; i++) {
+      let confetti = document.createElement("div");
+      confetti.className = "confetti";
+      confetti.style.left = Math.random() * 100 + "vw";
+      confetti.style.animationDuration = 2 + Math.random() * 3 + "s";
+      confetti.style.backgroundColor = `hsl(${Math.floor(Math.random() * 360)}, 100%, 70%)`;
+      document.body.appendChild(confetti);
+    }
+  </script>
+
+</body>
+</html>
